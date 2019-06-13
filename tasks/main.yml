@@ -8,9 +8,14 @@
     warn: False
 
 - name: add source nvm.sh to .bashrc
-  lineinfile:
+  blockinfile:
     path: "{{ nvm_user_home }}/.bashrc"
-    line: "source {{ nvm_user_home }}/.nvm/nvm.sh"
+    marker: ANSIBLE role-nvm
+    block: |
+      export NVM_DIR="$HOME/.nvm"
+      export NPM_CONFIG_PREFIX=
+      [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+      [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
     insertafter: EOF
     owner: "{{ nvm_user }}"
     group: "{{ nvm_user }}"
