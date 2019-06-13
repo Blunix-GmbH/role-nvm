@@ -13,7 +13,8 @@ platforms:
 provisioner:
   name: ansible
   connection_options:
-    ansible_become: yes
+    ansible_become: True
+    ansible_ssh_pipelining: True
   lint:
     name: ansible-lint
 scenario:

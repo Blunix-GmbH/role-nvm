@@ -2,12 +2,34 @@
 - name: Converge
   hosts: all
   become: True
-  vars:
-    nvm_version: v0.34.0
-    nvm_nodejs_version: 10.15.3
-    nvm_nodejs_version_default: "{{ nvm_nodejs_version: }}"
-    nvm_user: www_example_com
-    nvm_user_home: /var/www/www_example_com
-
   roles:
     - role: role-nvm
+  vars:
+    # Linux user to install nvm for
+    nvm_user: www_example_com
+    # homedir of the linux user
+    nvm_user_home: /var/www/www_example_com
+    # nvm version
+    nvm_version: v0.34.0
+    # nodejs version to install with nvm
+    nvm_nodejs_version: 10.15.3
+    # nodejs version to set as default version
+    nvm_nodejs_default_version: "{{ nvm_nodejs_version }}"
+    # packages to install via npm
+    nvm_npm_packages_installed:
+      - fo
+    # packages to uninstall via npm
+    nvm_npm_packages_removed:
+      - bar
+
+
+  pre_tasks:
+    - name: create /var/www
+      file:
+        path: /var/www
+        state: directory
+
+    - name: create user www_example_com
+      user:
+        name: www_example_com
+        home: /var/www/www_example_com

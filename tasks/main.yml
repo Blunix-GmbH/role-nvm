@@ -1,10 +1,11 @@
-- name: install nvm
+- name: install nvm in the specified version
   shell: "curl -o- https://raw.githubusercontent.com/creationix/nvm/{{ nvm_version }}/install.sh | bash"
   become: True
   become_user: "{{ nvm_user }}"
   args:
     executable: /bin/bash
     creates: "{{ nvm_user_home }}/.nvm/nvm.sh"
+    warn: False
 
 - name: add source nvm.sh to .bashrc
   lineinfile:
@@ -27,10 +28,44 @@
     executable: /bin/bash
     creates: "{{ nvm_user_home }}/.nvm/versions/node/v{{ nvm_nodejs_version }}/bin/node"
 
-- name: set nodejs version as default
-  shell: "nvm alias default {{ nvm_nodejs_version_default }}"
-  become: True
-  become_user: "{{ nvm_user }}"
+- name: set the specified default nodejs version
+  copy:
+    dest: "{{ nvm_user_home }}/.nvm/alias/default"
+    content: "{{ nvm_nodejs_default_version | replace('v', '') }}"
+    owner: "{{ nvm_user }}"
+    group: "{{ nvm_user }}"
+    mode: 0640
+
+- name: install npm packages
+  # npm: TODO new modules bugs around
+  #   name: "{{ nvm_npm_package_installed }}"
+  #   executable: "{{ nvm_user_home }}/.nvm/versions/node/v{{ nvm_nodejs_version }}/bin/npm"
+  #   path: "{{ nvm_user_home }}"
+  shell: |
+    cd; source {{ nvm_user_home }}/.nvm/nvm.sh
+    npm install {{ nvm_npm_package_installed }}
   args:
     executable: /bin/bash
-    creates: "{{ nvm_user_home }}/.nvm/versions/node/v{{ nvm_nodejs_version }}/bin/node"
+    creates: "{{ nvm_user_home }}/node_modules/{{ nvm_npm_package_installed }}"
+  become: True
+  become_user: "{{ nvm_user }}"
+  with_items: "{{ nvm_npm_packages_installed }}"
+  loop_control:
+    loop_var: nvm_npm_package_installed
+
+- name: remove npm packages
+  # npm: TODO new modules bugs around
+  #   name: "{{ nvm_npm_package_removed }}"
+  #   executable: "{{ nvm_user_home }}/.nvm/versions/node/v{{ nvm_nodejs_version }}/bin/npm"
+  #   path: "{{ nvm_user_home }}"
+  shell: |
+    cd; source {{ nvm_user_home }}/.nvm/nvm.sh
+    npm uninstall {{ nvm_npm_package_removed }}
+  args:
+    executable: /bin/bash
+    removes: "{{ nvm_user_home }}/node_modules/{{ nvm_npm_package_removed }}"
+  become: True
+  become_user: "{{ nvm_user }}"
+  with_items: "{{ nvm_npm_packages_removed }}"
+  loop_control:
+    loop_var: nvm_npm_package_removed
