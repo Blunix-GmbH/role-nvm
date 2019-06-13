@@ -1,0 +1,36 @@
+- name: install nvm
+  shell: "curl -o- https://raw.githubusercontent.com/creationix/nvm/{{ nvm_version }}/install.sh | bash"
+  become: True
+  become_user: "{{ nvm_user }}"
+  args:
+    executable: /bin/bash
+    creates: "{{ nvm_user_home }}/.nvm/nvm.sh"
+
+- name: add source nvm.sh to .bashrc
+  lineinfile:
+    path: "{{ nvm_user_home }}/.bashrc"
+    line: "source {{ nvm_user_home }}/.nvm/nvm.sh"
+    insertafter: EOF
+    owner: "{{ nvm_user }}"
+    group: "{{ nvm_user }}"
+    mode: 0640
+  become: True
+  become_user: "{{ nvm_user }}"
+
+- name: install nodejs
+  shell: |
+    source {{ nvm_user_home }}/.nvm/nvm.sh
+    nvm install {{ nvm_nodejs_version }}
+  become: True
+  become_user: "{{ nvm_user }}"
+  args:
+    executable: /bin/bash
+    creates: "{{ nvm_user_home }}/.nvm/versions/node/v{{ nvm_nodejs_version }}/bin/node"
+
+- name: set nodejs version as default
+  shell: "nvm alias default {{ nvm_nodejs_version_default }}"
+  become: True
+  become_user: "{{ nvm_user }}"
+  args:
+    executable: /bin/bash
+    creates: "{{ nvm_user_home }}/.nvm/versions/node/v{{ nvm_nodejs_version }}/bin/node"

@@ -1,0 +1,13 @@
+---
+- name: Converge
+  hosts: all
+  become: True
+  vars:
+    nvm_version: v0.34.0
+    nvm_nodejs_version: 10.15.3
+    nvm_nodejs_version_default: "{{ nvm_nodejs_version: }}"
+    nvm_user: www_example_com
+    nvm_user_home: /var/www/www_example_com
+
+  roles:
+    - role: role-nvm
