@@ -1,4 +1,4 @@
-# Role PHP-FPM
+# Role node version manager (nvm)
 
 This role installs and configures nvm. It then installs a given nodejs version. When installing a nodejs, nvm will automatically install a compatible npm version.
 

@@ -7,12 +7,14 @@
   vars:
     # Linux user to install nvm for
     nvm_user: www_example_com
+    # Linux group of the user (default: nvm_user)
+    nvm_user: www_example_com
     # homedir of the linux user
     nvm_user_home: /var/www/www_example_com
     # nvm version
-    nvm_version: v0.34.0
+    nvm_version: v0.35.3
     # nodejs version to install with nvm
-    nvm_nodejs_version: 10.15.3
+    nvm_nodejs_version: 12.18.3
     # nodejs version to set as default version
     nvm_nodejs_default_version: "{{ nvm_nodejs_version }}"
     # packages to install via npm

@@ -7,7 +7,7 @@
     creates: "{{ nvm_user_home }}/.nvm/nvm.sh"
     warn: False
 
-- name: add source nvm.sh to .bashrc
+- name: add source nvm bash completion to .bashrc
   blockinfile:
     path: "{{ nvm_user_home }}/.bashrc"
     marker: '## ANSIBLE role-nvm {mark} ##'
@@ -16,11 +16,10 @@
       export NPM_CONFIG_PREFIX=
       [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
       [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+      export PATH="$PATH:{{ nvm_user_home }}/node_modules/.bin/"
     owner: "{{ nvm_user }}"
-    group: "{{ nvm_user }}"
+    group: "{{ nvm_group }}"
     mode: 0640
-  become: True
-  become_user: "{{ nvm_user }}"
 
 - name: install nodejs
   shell: |
@@ -37,7 +36,7 @@
     dest: "{{ nvm_user_home }}/.nvm/alias/default"
     content: "{{ nvm_nodejs_default_version | replace('v', '') }}"
     owner: "{{ nvm_user }}"
-    group: "{{ nvm_user }}"
+    group: "{{ nvm_group }}"
     mode: 0640
 
 - name: install npm packages
