@@ -1,11 +1,25 @@
+- name: install acl so ansible become works correctly
+  apt:
+    name:
+      - acl
+      - curl
+    state: present
+
 - name: install nvm in the specified version
-  shell: "curl -o- https://raw.githubusercontent.com/creationix/nvm/{{ nvm_version }}/install.sh | bash"
+  shell: |
+    set -o pipefail && \
+    curl -o- https://raw.githubusercontent.com/creationix/nvm/{{ nvm_version }}/install.sh | bash 2>&1
   become: True
   become_user: "{{ nvm_user }}"
   args:
     executable: /bin/bash
     creates: "{{ nvm_user_home }}/.nvm/nvm.sh"
     warn: False
+  register: nvm_install_out
+
+- name: print nvm install output
+  debug:
+    msg: "{{ nvm_install_out.stdout_lines }}"
 
 - name: add source nvm bash completion to .bashrc
   blockinfile:
@@ -34,7 +48,7 @@
 - name: set the specified default nodejs version
   copy:
     dest: "{{ nvm_user_home }}/.nvm/alias/default"
-    content: "{{ nvm_nodejs_default_version | replace('v', '') }}"
+    content: "{{ nvm_nodejs_default_version | replace('v', '') }}\n"
     owner: "{{ nvm_user }}"
     group: "{{ nvm_group }}"
     mode: 0640

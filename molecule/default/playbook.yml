@@ -1,14 +1,14 @@
----
 - name: Converge
   hosts: all
   become: True
   roles:
     - role: role-nvm
   vars:
+
     # Linux user to install nvm for
     nvm_user: www_example_com
     # Linux group of the user (default: nvm_user)
-    nvm_user: www_example_com
+    nvm_group: "{{ nvm_user }}"
     # homedir of the linux user
     nvm_user_home: /var/www/www_example_com
     # nvm version
@@ -31,7 +31,12 @@
         path: /var/www
         state: directory
 
+    - name: create group www_example_com
+      group:
+        name: www_example_com
+
     - name: create user www_example_com
       user:
         name: www_example_com
         home: /var/www/www_example_com
+        group: www_example_com
