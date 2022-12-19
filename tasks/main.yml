@@ -14,7 +14,6 @@
   args:
     executable: /bin/bash
     creates: "{{ nvm_user_home }}/.nvm/nvm.sh"
-    warn: False
   register: nvm_install_out
 
 - name: print nvm install output
