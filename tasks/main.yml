@@ -21,18 +21,17 @@
     msg: "{{ nvm_install_out.stdout_lines }}"
 
 - name: add source nvm bash completion to .bashrc
-  blockinfile:
-    path: "{{ nvm_user_home }}/.bashrc"
-    marker: '## ANSIBLE role-nvm {mark} ##'
-    block: |
+  copy:
+    dest: "{{ nvm_user_home }}/.bashrc.d/nvm.sh"
+    owner: "{{ nvm_user }}"
+    group: "{{ nvm_group }}"
+    mode: 0640
+    content: |
       export NVM_DIR="$HOME/.nvm"
       export NPM_CONFIG_PREFIX=
       [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
       [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
       export PATH="$PATH:{{ nvm_user_home }}/node_modules/.bin/"
-    owner: "{{ nvm_user }}"
-    group: "{{ nvm_group }}"
-    mode: 0640
 
 - name: install nodejs
   shell: |
